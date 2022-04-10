@@ -1,0 +1,27 @@
+# Gradle
+.gradle
+.build
+build
+out
+captures
+projectFilesBackup
+
+# Android
+.kotlintest
+local.properties
+jacoco.exec
+
+# IntelliJ Idea / Android Studio
+*.iml
+.idea/*
+!.idea/codeStyles
+!.idea/dictionaries
+!.idea/fileTemplates
+!.idea/inspectionProfiles
+!.idea/codeInsightSettings.xml
+!.idea/encodings.xml
+!.idea/kotlinScripting.xml
+!.idea/vcs.xml
+
+# macOS
+.DS_Store
