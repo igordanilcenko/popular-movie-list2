@@ -8,7 +8,6 @@ android {
 
     defaultConfig {
         minSdk = Sdk.min
-        targetSdk = Sdk.target
     }
 
     buildFeatures {
@@ -17,6 +16,10 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = Dependency.AndroidX.Compose.version
     }
+    kotlin {
+        jvmToolchain(17)
+    }
+    namespace = "com.ihardanilchanka.sampleapp2.lib.ui"
 }
 
 dependencies {

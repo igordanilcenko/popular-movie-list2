@@ -1,8 +1,8 @@
 plugins {
     id("com.android.library")
     kotlin("android")
-    kotlin("kapt")
     id("kotlin-parcelize")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -10,7 +10,6 @@ android {
 
     defaultConfig {
         minSdk = Sdk.min
-        targetSdk = Sdk.target
     }
 
     buildFeatures {
@@ -19,6 +18,10 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = Dependency.AndroidX.Compose.version
     }
+    kotlin {
+        jvmToolchain(17)
+    }
+    namespace = "com.ihardanilchanka.sampleapp2.movies"
 }
 
 dependencies {
@@ -35,10 +38,10 @@ dependencies {
 
     implementation(Dependency.Room.runtime)
     implementation(Dependency.Room.ktx)
-    kapt(Dependency.Room.compiler)
+    ksp(Dependency.Room.compiler)
 
     implementation(Dependency.Moshi.kotlin)
-    kapt(Dependency.Moshi.kotlinCodegen)
+    ksp(Dependency.Moshi.kotlinCodegen)
 
     implementation(Dependency.Koin.core)
     implementation(Dependency.Koin.android)

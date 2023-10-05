@@ -8,6 +8,9 @@ android {
 
     defaultConfig {
         minSdk = Sdk.min
-        targetSdk = Sdk.target
     }
+    kotlin {
+        jvmToolchain(17)
+    }
+    namespace = "com.ihardanilchanka.sampleapp2.lib.usecase"
 }
