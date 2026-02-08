@@ -1,16 +1,16 @@
 plugins {
-    id("com.android.library")
-    kotlin("android")
+    alias(libs.plugins.android.library)
 }
 
 android {
-    compileSdk = Sdk.compile
+    compileSdk = (property("sdk.compile") as String).toInt()
 
     defaultConfig {
-        minSdk = Sdk.min
-    }
-    kotlin {
-        jvmToolchain(17)
+        minSdk = (property("sdk.min") as String).toInt()
     }
     namespace = "com.ihardanilchanka.sampleapp2.lib.usecase"
+}
+
+kotlin {
+    jvmToolchain(17)
 }

@@ -4,10 +4,8 @@ import com.ihardanilchanka.sampleapp2.domain.model.ImageConfig
 import com.squareup.moshi.Json
 
 data class ImageConfigDto(
-    @Json(name = "base_url")
-    val baseUrl: String,
-    @Json(name = "secure_base_url")
-    val secureBaseUrl: String
+    @param:Json(name = "base_url") val baseUrl: String,
+    @param:Json(name = "secure_base_url") val secureBaseUrl: String,
 ) {
 
     fun toModel() = ImageConfig(baseUrl = baseUrl, secureBaseUrl = secureBaseUrl)

@@ -1,17 +1,19 @@
 package com.ihardanilchanka.sampleapp2
 
 import android.app.Application
-import coil.ImageLoader
-import coil.ImageLoaderFactory
-import coil.disk.DiskCache
-import coil.memory.MemoryCache
+import coil3.ImageLoader
+import coil3.SingletonImageLoader
+import coil3.disk.DiskCache
+import coil3.disk.directory
+import coil3.memory.MemoryCache
+import coil3.request.crossfade
 import com.ihardanilchanka.sampleapp2.koin.MoviesModule
 import com.ihardanilchanka.sampleapp2.koin.NavigationModule
 import com.ihardanilchanka.sampleapp2.koin.NetworkModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
-class SampleAppApplication : Application(), ImageLoaderFactory {
+class SampleAppApplication : Application(), SingletonImageLoader.Factory {
 
     override fun onCreate() {
         super.onCreate()
@@ -27,16 +29,16 @@ class SampleAppApplication : Application(), ImageLoaderFactory {
         }
     }
 
-    override fun newImageLoader() = ImageLoader.Builder(this@SampleAppApplication)
+    override fun newImageLoader(context: android.content.Context) = ImageLoader.Builder(context)
         .crossfade(true)
         .memoryCache {
-            MemoryCache.Builder(this@SampleAppApplication)
-                .maxSizePercent(0.25)
+            MemoryCache.Builder()
+                .maxSizePercent(context, 0.25)
                 .build()
         }
         .diskCache {
             DiskCache.Builder()
-                .directory(this@SampleAppApplication.cacheDir.resolve("image_cache"))
+                .directory(cacheDir.resolve("image_cache"))
                 .maxSizePercent(0.02)
                 .build()
         }

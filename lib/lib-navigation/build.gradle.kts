@@ -1,29 +1,29 @@
 plugins {
-    id("com.android.library")
-    kotlin("android")
+    alias(libs.plugins.android.library)
 }
 
 android {
-    compileSdk = Sdk.compile
+    compileSdk = (property("sdk.compile") as String).toInt()
 
     defaultConfig {
-        minSdk = Sdk.min
-    }
-    kotlin {
-        jvmToolchain(17)
+        minSdk = (property("sdk.min") as String).toInt()
     }
     namespace = "com.ihardanilchanka.sampleapp2.lib.navigation"
 }
 
+kotlin {
+    jvmToolchain(17)
+}
+
 dependencies {
-    implementation(Dependency.coroutines)
-    implementation(Dependency.material)
+    implementation(libs.coroutines)
+    implementation(libs.material)
 
-    implementation(Dependency.AndroidX.core)
-    implementation(Dependency.AndroidX.Lifecycle.runtime)
-    implementation(Dependency.AndroidX.Navigation.compose)
+    implementation(libs.androidx.core)
+    implementation(libs.androidx.lifecycle.runtime)
+    implementation(libs.androidx.navigation.compose)
 
-    implementation(Dependency.Koin.core)
+    implementation(libs.koin.core)
 
-    implementation(project(Module.Lib.usecase))
+    implementation(project(":lib:lib-usecase"))
 }

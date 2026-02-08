@@ -13,10 +13,15 @@ import com.ihardanilchanka.sampleapp2.domain.repository.ConfigRepository
 import com.ihardanilchanka.sampleapp2.domain.repository.GenreRepository
 import com.ihardanilchanka.sampleapp2.domain.repository.MovieRepository
 import com.ihardanilchanka.sampleapp2.domain.repository.ReviewRepository
-import com.ihardanilchanka.sampleapp2.domain.usecase.*
+import com.ihardanilchanka.sampleapp2.domain.usecase.LoadConfigUseCase
+import com.ihardanilchanka.sampleapp2.domain.usecase.LoadGenreListUseCase
+import com.ihardanilchanka.sampleapp2.domain.usecase.LoadReviewListUseCase
+import com.ihardanilchanka.sampleapp2.domain.usecase.MovieConfigUseCase
+import com.ihardanilchanka.sampleapp2.domain.usecase.MovieUseCase
+import com.ihardanilchanka.sampleapp2.domain.usecase.SelectedMovieUseCase
 import com.ihardanilchanka.sampleapp2.presentation.moviedetail.MovieDetailViewModel
 import com.ihardanilchanka.sampleapp2.presentation.movielist.MovieListViewModel
-import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 import retrofit2.Retrofit
 
@@ -29,8 +34,8 @@ object MoviesModule {
         single<ConfigRepository> { ConfigRepositoryImpl(get(), get(), get()) }
         single<ReviewRepository> { ReviewRepositoryImpl(get(), get()) }
 
-        viewModel { MovieListViewModel(get(), get(), get(), get()) }
-        viewModel { MovieDetailViewModel(get(), get(), get(), get(), get()) }
+        viewModelOf(::MovieListViewModel)
+        viewModelOf(::MovieDetailViewModel)
 
         factory { MovieUseCase.LoadSimilar(get(), get()) }
         factory { MovieUseCase.LoadPopular(get(), get()) }
