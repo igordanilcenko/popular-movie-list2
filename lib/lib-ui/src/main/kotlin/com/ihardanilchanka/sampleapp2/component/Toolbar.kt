@@ -14,38 +14,59 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 
 @Composable
 fun Toolbar(
     titleResId: Int?,
+    modifier: Modifier = Modifier,
     navigateUp: (() -> Unit)? = null,
 ) {
-    Toolbar(titleResId?.let { stringResource(it) }, navigateUp)
+    Toolbar(titleResId?.let { stringResource(it) }, modifier, navigateUp)
 }
 
 @Composable
 fun Toolbar(
     title: String?,
+    modifier: Modifier = Modifier,
     navigateUp: (() -> Unit)? = null,
 ) {
-    Box(Modifier.shadow(4.dp)) {
+    Box(modifier.shadow(4.dp)) {
         TopAppBar(
             title = { title?.let { Text(text = title) } },
-            navigationIcon = { NavigationButton(navigateUp) },
+            navigationIcon = { NavigationButton(navigateUp = navigateUp) },
         )
     }
 }
 
 @Composable
-private fun NavigationButton(navigateUp: (() -> Unit)?) {
+private fun NavigationButton(
+    modifier: Modifier = Modifier,
+    navigateUp: (() -> Unit)? = null,
+) {
     if (navigateUp != null) {
-        IconButton(onClick = { navigateUp() }) {
+        IconButton(
+            modifier = modifier,
+            onClick = { navigateUp() },
+        ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "Arrow back",
             )
         }
     }
+}
+
+@Preview
+@Composable
+private fun ToolbarTitleOnlyPreview() {
+    Toolbar(title = "Movie List")
+}
+
+@Preview
+@Composable
+private fun ToolbarWithBackButtonPreview() {
+    Toolbar(title = "Movie Details", navigateUp = {})
 }

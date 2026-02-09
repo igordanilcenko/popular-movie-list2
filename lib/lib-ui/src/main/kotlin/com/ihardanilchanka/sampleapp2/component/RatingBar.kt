@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.material3.MaterialTheme
@@ -17,6 +18,8 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -108,4 +111,22 @@ private val starPath = { size: Float ->
         }
         close()
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun RatingBarEmptyPreview() {
+    RatingBar(modifier = Modifier.height(24.dp), rating = 0f)
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun RatingBarHalfPreview() {
+    RatingBar(modifier = Modifier.height(24.dp), rating = 2.66f)
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun RatingBarFullPreview() {
+    RatingBar(modifier = Modifier.height(24.dp), rating = 5f)
 }
