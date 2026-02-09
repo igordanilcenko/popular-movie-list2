@@ -1,35 +1,36 @@
 plugins {
-    id("com.android.library")
-    kotlin("android")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
-    compileSdk = Sdk.compile
+    compileSdk = (property("sdk.compile") as String).toInt()
 
     defaultConfig {
-        minSdk = Sdk.min
+        minSdk = (property("sdk.min") as String).toInt()
     }
 
     buildFeatures {
         compose = true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = Dependency.AndroidX.Compose.version
-    }
-    kotlin {
-        jvmToolchain(17)
-    }
     namespace = "com.ihardanilchanka.sampleapp2.lib.ui"
 }
 
+kotlin {
+    jvmToolchain(17)
+}
+
 dependencies {
-    implementation(Dependency.coroutines)
+    implementation(libs.coroutines)
 
-    implementation(Dependency.AndroidX.Compose.ui)
-    implementation(Dependency.AndroidX.Compose.foundation)
-    implementation(Dependency.AndroidX.Compose.material)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.material.icons)
 
-    implementation(Dependency.Retrofit.retrofit)
+    implementation(libs.retrofit)
 
-    implementation(Dependency.coil)
+    implementation(libs.coil)
+    implementation(libs.coil.network)
 }

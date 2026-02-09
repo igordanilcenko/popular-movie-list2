@@ -1,28 +1,28 @@
 plugins {
-    id("com.android.library")
-    kotlin("android")
+    alias(libs.plugins.android.library)
 }
 
 android {
-    compileSdk = Sdk.compile
+    compileSdk = (property("sdk.compile") as String).toInt()
 
     defaultConfig {
-        minSdk = Sdk.min
-    }
-    kotlin {
-        jvmToolchain(17)
+        minSdk = (property("sdk.min") as String).toInt()
     }
     namespace = "com.ihardanilchanka.sampleapp2.lib.network"
 }
 
+kotlin {
+    jvmToolchain(17)
+}
+
 dependencies {
-    implementation(Dependency.coroutines)
+    implementation(libs.coroutines)
 
-    implementation(Dependency.Koin.core)
+    implementation(libs.koin.core)
 
-    api(Dependency.Retrofit.retrofit)
-    implementation(Dependency.Retrofit.loggingInterceptor)
-    implementation(Dependency.Retrofit.converterMoshi)
+    api(libs.retrofit)
+    implementation(libs.okhttp.logging)
+    implementation(libs.retrofit.converter.moshi)
 
-    implementation(Dependency.Moshi.kotlin)
+    implementation(libs.moshi.kotlin)
 }

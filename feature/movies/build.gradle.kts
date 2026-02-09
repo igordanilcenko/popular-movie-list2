@@ -1,56 +1,53 @@
 plugins {
-    id("com.android.library")
-    kotlin("android")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.compose)
     id("kotlin-parcelize")
-    id("com.google.devtools.ksp")
+    alias(libs.plugins.ksp)
 }
 
 android {
-    compileSdk = Sdk.compile
+    compileSdk = (property("sdk.compile") as String).toInt()
 
     defaultConfig {
-        minSdk = Sdk.min
+        minSdk = (property("sdk.min") as String).toInt()
     }
 
     buildFeatures {
         compose = true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = Dependency.AndroidX.Compose.version
-    }
-    kotlin {
-        jvmToolchain(17)
-    }
     namespace = "com.ihardanilchanka.sampleapp2.movies"
 }
 
+kotlin {
+    jvmToolchain(17)
+}
+
 dependencies {
-    implementation(Dependency.coroutines)
+    implementation(libs.coroutines)
 
-    implementation(Dependency.AndroidX.core)
-    implementation(Dependency.AndroidX.Lifecycle.viewModel)
+    implementation(libs.androidx.core)
+    implementation(libs.androidx.lifecycle.viewmodel)
 
-    implementation(Dependency.swipeRefresh)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.compose.material3)
 
-    implementation(Dependency.AndroidX.Compose.ui)
-    implementation(Dependency.AndroidX.Compose.foundation)
-    implementation(Dependency.AndroidX.Compose.material)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
 
-    implementation(Dependency.Room.runtime)
-    implementation(Dependency.Room.ktx)
-    ksp(Dependency.Room.compiler)
+    implementation(libs.moshi.kotlin)
+    ksp(libs.moshi.codegen)
 
-    implementation(Dependency.Moshi.kotlin)
-    ksp(Dependency.Moshi.kotlinCodegen)
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
+    implementation(libs.koin.compose)
 
-    implementation(Dependency.Koin.core)
-    implementation(Dependency.Koin.android)
-    implementation(Dependency.Koin.compose)
+    implementation(project(":lib:lib-ui"))
+    implementation(project(":lib:lib-usecase"))
+    implementation(project(":lib:lib-network"))
+    implementation(project(":lib:lib-navigation"))
 
-    implementation(project(Module.Lib.ui))
-    implementation(project(Module.Lib.usecase))
-    implementation(project(Module.Lib.network))
-    implementation(project(Module.Lib.navigation))
-
-    implementation(Dependency.AndroidX.Navigation.compose)
+    implementation(libs.androidx.navigation.compose)
 }

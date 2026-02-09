@@ -1,16 +1,16 @@
 plugins {
-    id("com.android.application")
-    id("com.google.devtools.ksp")
-    kotlin("android")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
 }
 
 android {
-    compileSdk = Sdk.compile
+    compileSdk = (property("sdk.compile") as String).toInt()
 
     defaultConfig {
         applicationId = "com.ihardanilchanka.sampleapp2"
-        minSdk = Sdk.min
-        targetSdk = Sdk.target
+        minSdk = (property("sdk.min") as String).toInt()
+        targetSdk = (property("sdk.target") as String).toInt()
         versionCode = 1
         versionName = "1.0"
 
@@ -42,31 +42,31 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlin {
-        jvmToolchain(17)
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = Dependency.AndroidX.Compose.version
-    }
     namespace = "com.ihardanilchanka.sampleapp2"
 }
 
+kotlin {
+    jvmToolchain(17)
+}
+
 dependencies {
-    implementation(Dependency.AndroidX.core)
-    implementation(Dependency.material)
+    implementation(libs.androidx.core)
+    implementation(libs.material)
 
-    implementation(Dependency.AndroidX.Compose.activity)
-    implementation(Dependency.AndroidX.Compose.material)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.activity)
+    implementation(libs.androidx.compose.material3)
 
-    implementation(Dependency.Koin.core)
-    implementation(Dependency.Koin.android)
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
 
-    implementation(Dependency.coil)
+    implementation(libs.coil)
+    implementation(libs.coil.network)
 
-    implementation(project(Module.Feature.movies))
-    implementation(project(Module.Lib.ui))
-    implementation(project(Module.Lib.network))
-    implementation(project(Module.Lib.navigation))
+    implementation(project(":feature:movies"))
+    implementation(project(":lib:lib-ui"))
+    implementation(project(":lib:lib-network"))
+    implementation(project(":lib:lib-navigation"))
 
-    implementation(Dependency.AndroidX.Navigation.compose)
+    implementation(libs.androidx.navigation.compose)
 }

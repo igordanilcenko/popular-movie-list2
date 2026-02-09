@@ -1,9 +1,14 @@
 package com.ihardanilchanka.sampleapp2.component
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.GenericShape
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,7 +28,7 @@ import kotlin.math.sin
 fun RatingBar(
     rating: Float,
     modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colors.primaryVariant
+    color: Color = MaterialTheme.colorScheme.primaryContainer,
 ) {
     Row(modifier = modifier.wrapContentSize()) {
         (1..5).forEach { step ->
@@ -43,13 +48,13 @@ private fun RatingStar(
     ratingColor: Color = Color.Yellow,
     backgroundColor: Color = Color.Gray
 ) {
-    BoxWithConstraints(
+    Box(
         modifier = Modifier
             .fillMaxHeight()
             .aspectRatio(1f)
             .clip(starShape)
     ) {
-        Canvas(modifier = Modifier.size(maxHeight)) {
+        Canvas(modifier = Modifier.fillMaxSize()) {
             drawRect(
                 brush = SolidColor(backgroundColor),
                 size = Size(

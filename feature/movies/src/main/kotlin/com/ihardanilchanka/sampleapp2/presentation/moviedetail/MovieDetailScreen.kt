@@ -2,13 +2,27 @@ package com.ihardanilchanka.sampleapp2.presentation.moviedetail
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
-import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -17,30 +31,48 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.ihardanilchanka.sampleapp2.LoadingState.*
-import com.ihardanilchanka.sampleapp2.component.*
+import com.ihardanilchanka.sampleapp2.LoadingState.Error
+import com.ihardanilchanka.sampleapp2.LoadingState.Loading
+import com.ihardanilchanka.sampleapp2.LoadingState.Ready
+import com.ihardanilchanka.sampleapp2.component.BasicError
+import com.ihardanilchanka.sampleapp2.component.BasicLoading
+import com.ihardanilchanka.sampleapp2.component.CoilImage
+import com.ihardanilchanka.sampleapp2.component.GradientDark
+import com.ihardanilchanka.sampleapp2.component.RatingBar
+import com.ihardanilchanka.sampleapp2.component.Toolbar
 import com.ihardanilchanka.sampleapp2.domain.model.Movie
 import com.ihardanilchanka.sampleapp2.domain.model.Review
 import com.ihardanilchanka.sampleapp2.movies.R
 import com.ihardanilchanka.sampleapp2.toYear
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun MovieDetailScreen(viewModel: MovieDetailViewModel = getViewModel()) {
+fun MovieDetailScreen(viewModel: MovieDetailViewModel = koinViewModel()) {
     val uiState by viewModel.movieDetailUiState.collectAsState()
 
-    Scaffold(topBar = {
-        Toolbar(
-            title = uiState.movie?.title,
-            navigateUp = { viewModel.navigateUp() })
-    }) {
-        Content(viewModel, uiState)
+    Scaffold(
+        topBar = {
+            Toolbar(
+                title = uiState.movie?.title,
+                navigateUp = { viewModel.navigateUp() },
+            )
+        }
+    ) { innerPadding ->
+        Content(
+            viewModel = viewModel,
+            uiState = uiState,
+            modifier = Modifier.padding(innerPadding),
+        )
     }
 }
 
 @Composable
-fun Content(viewModel: MovieDetailViewModel, uiState: MovieDetailUiState) {
-    LazyColumn(modifier = Modifier.fillMaxWidth()) {
+fun Content(
+    viewModel: MovieDetailViewModel,
+    uiState: MovieDetailUiState,
+    modifier: Modifier = Modifier,
+) {
+    LazyColumn(modifier = modifier.fillMaxWidth()) {
         uiState.movie?.let { movie ->
             item { MovieHeader(movie) }
             item { MovieBasicInfo(movie) }
@@ -103,8 +135,8 @@ fun MovieHeader(movie: Movie) {
         GradientDark(Modifier.matchParentSize())
         Text(
             text = movie.title,
-            style = MaterialTheme.typography.h4,
-            color = MaterialTheme.colors.onPrimary,
+            style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.onPrimary,
             modifier = Modifier
                 .align(alignment = Alignment.BottomStart)
                 .padding(16.dp),
@@ -115,7 +147,7 @@ fun MovieHeader(movie: Movie) {
 @Composable
 fun MovieBasicInfo(movie: Movie) {
     Surface(
-        elevation = 2.dp,
+        tonalElevation = 2.dp,
         modifier = Modifier.padding(bottom = 16.dp)
     ) {
         Column(
@@ -125,13 +157,13 @@ fun MovieBasicInfo(movie: Movie) {
         ) {
             Text(
                 text = movie.releaseDate?.toYear()?.toString() ?: "TBA",
-                style = MaterialTheme.typography.h5,
+                style = MaterialTheme.typography.headlineSmall,
             )
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 text = movie.genreNames.joinToString(),
-                style = MaterialTheme.typography.subtitle1,
+                style = MaterialTheme.typography.titleMedium,
             )
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -143,14 +175,14 @@ fun MovieBasicInfo(movie: Movie) {
                 Spacer(modifier = Modifier.width(16.dp))
                 Text(
                     text = movie.voteAverage.toString(),
-                    style = MaterialTheme.typography.h3,
+                    style = MaterialTheme.typography.displaySmall,
                 )
             }
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
                 text = movie.overview,
-                style = MaterialTheme.typography.body2,
+                style = MaterialTheme.typography.bodyMedium,
             )
         }
     }
@@ -161,7 +193,7 @@ fun SimilarMovies(similarMovies: List<Movie>, onMovieSelected: (Movie) -> Unit) 
     Column {
         Text(
             text = stringResource(R.string.movie_detail_similar_movies_title),
-            style = MaterialTheme.typography.overline,
+            style = MaterialTheme.typography.labelSmall,
             modifier = Modifier
                 .padding(horizontal = 16.dp)
                 .padding(bottom = 16.dp),
@@ -181,13 +213,13 @@ fun SimilarMovies(similarMovies: List<Movie>, onMovieSelected: (Movie) -> Unit) 
 fun SimilarMovieItem(movie: Movie, onMovieItemClicked: (Movie) -> Unit) {
     Card(
         shape = RoundedCornerShape(4.dp),
-        elevation = 4.dp,
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         modifier = Modifier
             .padding(horizontal = 8.dp)
             .fillMaxHeight()
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
-                indication = rememberRipple(),
+                indication = ripple(),
                 onClick = { onMovieItemClicked(movie) }
             ),
     ) {
@@ -203,7 +235,7 @@ fun SimilarMovieItem(movie: Movie, onMovieItemClicked: (Movie) -> Unit) {
             Column(modifier = Modifier.width(160.dp)) {
                 Text(
                     text = "${movie.title} (${movie.releaseDate?.toYear() ?: "TBA"})",
-                    style = MaterialTheme.typography.subtitle2,
+                    style = MaterialTheme.typography.titleSmall,
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
@@ -211,7 +243,7 @@ fun SimilarMovieItem(movie: Movie, onMovieItemClicked: (Movie) -> Unit) {
                         prefix = "(",
                         postfix = ")"
                     ),
-                    style = MaterialTheme.typography.caption,
+                    style = MaterialTheme.typography.bodySmall,
                 )
                 Spacer(modifier = Modifier.height(8.dp))
 
@@ -223,7 +255,7 @@ fun SimilarMovieItem(movie: Movie, onMovieItemClicked: (Movie) -> Unit) {
                     Spacer(modifier = Modifier.width(16.dp))
                     Text(
                         text = movie.voteAverage.toString(),
-                        style = MaterialTheme.typography.caption,
+                        style = MaterialTheme.typography.bodySmall,
                     )
                 }
             }
@@ -235,7 +267,7 @@ fun SimilarMovieItem(movie: Movie, onMovieItemClicked: (Movie) -> Unit) {
 fun ReviewsHeader() {
     Text(
         text = stringResource(R.string.movie_detail_review_title),
-        style = MaterialTheme.typography.overline,
+        style = MaterialTheme.typography.labelSmall,
         modifier = Modifier
             .padding(horizontal = 16.dp)
             .padding(bottom = 16.dp),
@@ -246,7 +278,7 @@ fun ReviewsHeader() {
 fun ReviewItem(review: Review) {
     Card(
         shape = RoundedCornerShape(4.dp),
-        elevation = 2.dp,
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .fillMaxWidth(),
@@ -254,14 +286,13 @@ fun ReviewItem(review: Review) {
         Column(Modifier.padding(16.dp)) {
             Text(
                 text = review.author,
-                style = MaterialTheme.typography.subtitle1,
+                style = MaterialTheme.typography.titleMedium,
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = review.content,
-                style = MaterialTheme.typography.body2,
+                style = MaterialTheme.typography.bodyMedium,
             )
         }
     }
 }
-
