@@ -2,7 +2,9 @@ package com.ihardanilchanka.sampleapp2.presentation.movielist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ihardanilchanka.sampleapp2.LoadingState.*
+import com.ihardanilchanka.sampleapp2.LoadingState.Error
+import com.ihardanilchanka.sampleapp2.LoadingState.Loading
+import com.ihardanilchanka.sampleapp2.LoadingState.Ready
 import com.ihardanilchanka.sampleapp2.domain.model.Movie
 import com.ihardanilchanka.sampleapp2.domain.usecase.MovieUseCase
 import com.ihardanilchanka.sampleapp2.domain.usecase.SelectedMovieUseCase
@@ -52,7 +54,7 @@ class MovieListViewModel(
 
             runCatching {
                 val result = loadPopularMovies()
-                if (result.isNullOrEmpty()) {
+                if (result.isEmpty()) {
                     return@runCatching fetchMorePopularMovies()
                 }
                 result
@@ -115,6 +117,6 @@ class MovieListViewModel(
     private fun canLoadMore() = movieListUiState.value.loadingState != Loading &&
             movieListUiState.value.additionalLoadingState != Loading
 
-    private fun hasMoviesAlready() = !_movieListUiState.value.movies.isNullOrEmpty()
+    private fun hasMoviesAlready() = _movieListUiState.value.movies.isNotEmpty()
 
 }

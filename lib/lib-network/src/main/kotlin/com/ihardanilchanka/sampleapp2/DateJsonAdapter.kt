@@ -1,22 +1,25 @@
 package com.ihardanilchanka.sampleapp2
 
-import com.squareup.moshi.*
+import com.squareup.moshi.FromJson
+import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.JsonReader
+import com.squareup.moshi.JsonWriter
+import com.squareup.moshi.ToJson
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 class DateJsonAdapter : JsonAdapter<Date>() {
     private val dateFormat = SimpleDateFormat(DATE_FORMAT, Locale.getDefault())
 
     @FromJson
     override fun fromJson(reader: JsonReader): Date? {
-        return try {
+        return runCatching {
             val dateAsString = reader.nextString()
             synchronized(dateFormat) {
                 dateFormat.parse(dateAsString)
             }
-        } catch (e: Exception) {
-            null
-        }
+        }.getOrNull()
     }
 
     @ToJson

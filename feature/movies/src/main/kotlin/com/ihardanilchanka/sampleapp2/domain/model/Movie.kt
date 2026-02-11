@@ -1,6 +1,6 @@
 package com.ihardanilchanka.sampleapp2.domain.model
 
-import java.util.*
+import java.util.Date
 
 data class Movie(
     val id: Int,

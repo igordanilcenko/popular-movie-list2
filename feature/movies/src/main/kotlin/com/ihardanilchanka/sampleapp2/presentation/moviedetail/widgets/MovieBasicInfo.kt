@@ -19,7 +19,7 @@ import com.ihardanilchanka.sampleapp2.component.RatingBar
 import com.ihardanilchanka.sampleapp2.domain.model.Movie
 import com.ihardanilchanka.sampleapp2.presentation.previewMovie
 import com.ihardanilchanka.sampleapp2.resource.AppTheme
-import com.ihardanilchanka.sampleapp2.toYear
+import com.ihardanilchanka.sampleapp2.util.toYear
 
 @Composable
 fun MovieBasicInfo(
