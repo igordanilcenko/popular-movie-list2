@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.ihardanilchanka.sampleapp2.data.database.MoviesTypeConverters
 import com.ihardanilchanka.sampleapp2.data.model.MovieDto
-import java.util.*
+import java.util.Date
 
 @Entity(tableName = "movie")
 @TypeConverters(MoviesTypeConverters::class)

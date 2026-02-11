@@ -1,6 +1,7 @@
-package com.ihardanilchanka.sampleapp2
+package com.ihardanilchanka.sampleapp2.util
 
-import java.util.*
+import java.util.Calendar
+import java.util.Date
 
 /**
  * Extracts year number from Date instance.

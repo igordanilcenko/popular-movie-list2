@@ -9,7 +9,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import java.util.*
+import java.util.Date
 
 object NetworkModule {
     fun init() = module {
