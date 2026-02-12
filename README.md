@@ -1,51 +1,153 @@
-# Popular Movie List Sample App (Compose/Navigation)
-## About
-This project is a refactor of my previous sample project [popular-movie-list](https://github.com/ihardanilchanka/popular-movie-list) and has the same functionality, but uses the modern stack of technologies, and has modular architecture.
+# Popular Movie List
 
-## Project structure
-The project has a structure with multiple modules/libs.
-The main **app module** is very simple and has only MainActivity initializing and starting navigation screen, the Application class with [Koin](https://insert-koin.io/) initialization, and definition of navigation routes.
+A sample Android app that showcases modern Android development practices through a real use case:
+browsing popular movies from [TMDb](https://www.themoviedb.org/), viewing details, similar movies,
+and user reviews – with pagination, pull-to-refresh, and offline support.
 
-**Feature** modules contain screens related to certain the app's functionality, as also domain, and data logic.
+---
 
-**Lib** modules contain reusable classes used by other app's modules, such as network, UI components, or navigation.
+## What this project demonstrates
+
+- **Clean Architecture** with strict layer separation: presentation → domain → data, across a multi-module Gradle project
+- **MVI pattern** – each screen owns a single immutable `StateFlow<UiState>`; all changes flow through typed intents, making state transitions predictable and fully testable
+- **Testing across all layers** – ViewModel state transitions, repository cache/offline behaviour, and whole-screen Compose UI tests
+- **Business use cases** cover a reasonable scope for a sample project – the project is scalable, without being over-engineered
+
+---
+
+## Features
+
+- Popular movies list with infinite scroll and pull-to-refresh
+- Movie detail screen with similar movies carousel and user reviews
+- Per-section loading, error, and retry states
+- Offline fallback via Room for cached data
+- Graceful error handling throughout
+
+---
+
+## Loading Simulation
+
+The app applies a random 1–4 second delay to every API call via a `randomDelay()` function in
+`lib-network`. This is intentional – it makes all loading states, transitions, and error handling
+clearly visible when running or reviewing the app. Keep this in mind if the app feels slow; it is
+simulating real-world network latency.
+
+---
+
+## Tech Stack
+
+| Area | Libraries |
+|---|---|
+| Language | Kotlin 2.3 · Coroutines · Flow |
+| UI | Jetpack Compose · Material 3 |
+| Architecture | Clean Architecture · MVI · Multi-module |
+| DI | Koin 4.1 |
+| Networking | Retrofit 3 · OkHttp 5 · Moshi |
+| Persistence | Room 2.8 |
+| Image loading | Coil 3 |
+| Testing | JUnit 4 · MockK · Turbine · Compose UI Test |
+| Build | Gradle 9 · AGP 9 · KSP2 · Version Catalog |
+
+---
 
 ## Architecture
-The app is implemented in compliance with Google's [Guide to app architecture](https://developer.android.com/jetpack/guide). The navigation around the app uses the [Jetpack Navigation](https://developer.android.com/guide/navigation) library.
 
-### Presentation layer
-The main change is using [Jetpack Compose](https://developer.android.com/jetpack/compose) instead of traditional Activity/Fragments and XML layouts. **Composable components** receive UI state from **ViewModel** and update UI. **ViewModels** handle UI state as [StateFlow](https://developer.android.com/kotlin/flow/stateflow-and-sharedflow) and update it accordingly to domain logic.
+```
+app/                    → App entry point, Koin setup, navigation routes
+feature/movies/         → Movie list and detail screens
+lib/lib-ui/             → Shared Compose components and theme
+lib/lib-network/        → Retrofit + Moshi configuration
+lib/lib-usecase/        → Base UseCase interfaces
+lib/lib-navigation/     → Navigation controller abstraction
+```
 
-### Domain layer
-Domain logic is driven by **UseCases**. Every UseCase is a simple or suspend function that only performs one specific business logic action, such a retrieving data from a repository, or a navigation action.
+Each feature module follows a three-layer structure:
 
-### Data layer
-**Repositories** load data from different sources such as the Internet, Database, or Cache and keep the app's data state.
+```
+┌──────────────────────────────────────────────────────────┐
+│  Presentation  (Composables + ViewModel)                 │
+│    ↓ intents              ↑ StateFlow<UiState>           │
+├──────────────────────────────────────────────────────────┤
+│  Domain  (UseCases + Repository interfaces)              │
+│    • Single-responsibility UseCases                      │
+│    • No Android dependencies                             │
+├──────────────────────────────────────────────────────────┤
+│  Data  (Repository implementations + Room + REST)        │
+│    • Network-first; in-memory + Room/SP fallback         │
+└──────────────────────────────────────────────────────────┘
+```
 
-## Loading delay
-I added `randomDelay()` suspend function for making an artificial extra load to repository calls to simulate possible request delay. Also, it may cause an error forcing the user to reload the data.
+---
+
+## Data Persistence
+
+The application loads data in this priority:
+
+**Cache → Internet → Database**
+
+If the required data is available in the runtime cache, the app uses it directly – no API call is
+made even if a connection is available. This is a good approach for mobile devices where network
+conditions are unreliable.
+
+If the data is not cached, the app fetches it from the internet, saves the result to the database
+and populates the cache for subsequent reads.
+
+If the internet call fails, the app falls back to data previously saved in the database.
+
+---
+
+## Testing
+
+| Layer | Type | Tools |
+|---|---|---|
+| ViewModel (MVI state transitions) | JVM unit tests | JUnit 4 · MockK · coroutines-test · Turbine |
+| Repository (cache / offline logic) | JVM unit tests | JUnit 4 · MockK · coroutines-test |
+| Screen UI (loading / error / content states) | Compose instrumented tests | ui-test-junit4 · createComposeRule |
+
+**ViewModel tests** verify `UiState` transitions including intermediate `Loading` states captured
+with Turbine – confirming that states are emitted in the right order, not just that the final state
+is correct.
+
+**Repository tests** focus on non-obvious behaviour: in-memory cache hits that prevent duplicate
+network calls, Room/SharedPreferences offline fallback, pagination accumulation across pages, and
+the guard that rethrows when offline and the database is also empty.
+
+**Compose UI tests** call screen content composables directly with a hand-crafted `UiState` – no
+ViewModel, no Koin, no network. Each test is a pure UI assertion.
+
+```bash
+./gradlew :feature:movies:testDebugUnitTest          # unit tests
+./gradlew :feature:movies:connectedAndroidTest        # instrumented tests (device required)
+```
+
+---
+
+## CI
+
+Every pull request to `main` runs two GitHub Actions checks:
+
+| Workflow | What it does |
+|---|---|
+| **Unit Tests** | Runs JVM unit tests via `testDebugUnitTest` |
+| **Lint** | Runs Android lint via `lintDebug`; uploads HTML report as artifact |
+
+The `main` branch is protected – direct pushes are blocked, requiring all changes to go through
+a pull request.
+
+---
 
 ## License
 
 ```
-Licensed to the Apache Software Foundation (ASF) under one or more contributor
-license agreements. See the NOTICE file distributed with this work for
-additional information regarding copyright ownership. The ASF licenses this
-file to you under the Apache License, Version 2.0 (the "License"); you may not
-use this file except in compliance with the License. You may obtain a copy of
-the License at
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0
+    http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-License for the specific language governing permissions and limitations under
-the License.
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 ```
-
-
-
-
-
-
