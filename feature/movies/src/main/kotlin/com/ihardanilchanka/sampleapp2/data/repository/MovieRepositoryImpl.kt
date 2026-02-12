@@ -23,9 +23,8 @@ class MovieRepositoryImpl(
 
     private val similarMoviesCache = mutableMapOf<Int, List<MovieDto>>()
 
-    override fun getSelectedMovie(): Movie {
-        selectedMovie?.let { return it } ?: error("No movie stored in the MovieRepository!")
-    }
+    override fun getSelectedMovie(): Movie =
+        selectedMovie ?: error("No movie stored in the MovieRepository!")
 
     override fun storeSelectedMovie(movie: Movie) {
         selectedMovie = movie
