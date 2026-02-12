@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -50,7 +51,7 @@ fun MovieDetailScreen(viewModel: MovieDetailViewModel = koinViewModel()) {
 }
 
 @Composable
-private fun MovieDetailScreenContent(
+internal fun MovieDetailScreenContent(
     uiState: MovieDetailUiState,
     onMovieSelected: (Movie) -> Unit,
     onNavigateUp: () -> Unit,
@@ -110,13 +111,15 @@ private fun MovieDetailContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(160.dp)
+                        .testTag("similar_movies_loading")
                 )
             }
             is Error -> item {
                 BasicError(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(160.dp),
+                        .height(160.dp)
+                        .testTag("similar_movies_error"),
                     error = similarMoviesUiState.loadingState.error,
                     onReloadClicked = onReloadSimilarMovies,
                 )
@@ -150,13 +153,15 @@ private fun MovieDetailContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(160.dp)
+                        .testTag("reviews_loading")
                 )
             }
             is Error -> item {
                 BasicError(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(160.dp),
+                        .height(160.dp)
+                        .testTag("reviews_error"),
                     error = reviewsUiState.loadingState.error,
                     onReloadClicked = onReloadReviews,
                 )

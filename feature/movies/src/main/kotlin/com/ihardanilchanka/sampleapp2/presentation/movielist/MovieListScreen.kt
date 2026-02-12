@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.ihardanilchanka.sampleapp2.LoadingState
@@ -46,7 +47,7 @@ fun MovieListScreen(viewModel: MovieListViewModel = koinViewModel()) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun MovieListScreenContent(
+internal fun MovieListScreenContent(
     uiState: MovieListUiState,
     onMovieItemClicked: (Movie) -> Unit,
     onBottomReached: () -> Unit,
@@ -61,7 +62,9 @@ private fun MovieListScreenContent(
         when (uiState.loadingState) {
             is Ready -> {
                 MovieList(
-                    modifier = Modifier.padding(innerPadding),
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .testTag("movie_list_content"),
                     movies = uiState.movies,
                     additionalLoadingState = uiState.additionalLoadingState,
                     onMovieItemClicked = onMovieItemClicked,
@@ -76,13 +79,15 @@ private fun MovieListScreenContent(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding)
+                        .testTag("movie_list_loading")
                 )
             }
             is Error -> {
                 BasicError(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(innerPadding),
+                        .padding(innerPadding)
+                        .testTag("movie_list_error"),
                     error = uiState.loadingState.error,
                     onReloadClicked = onReloadClicked,
                 )
