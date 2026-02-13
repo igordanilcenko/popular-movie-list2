@@ -5,7 +5,7 @@ import com.ihardanilchanka.sampleapp2.data.MoviesRestInterface
 import com.ihardanilchanka.sampleapp2.data.database.dao.ReviewDao
 import com.ihardanilchanka.sampleapp2.data.model.ReviewDto
 import com.ihardanilchanka.sampleapp2.domain.repository.ReviewRepository
-import com.ihardanilchanka.sampleapp2.randomDelay
+import com.ihardanilchanka.sampleapp2.simulateNetworkDelay
 import java.net.UnknownHostException
 
 class ReviewRepositoryImpl(
@@ -15,7 +15,7 @@ class ReviewRepositoryImpl(
     private val reviewsCache = mutableMapOf<Int, List<ReviewDto>>()
 
     override suspend fun loadReviewList(movieId: Int) = reviewsCache[movieId] ?: try {
-        randomDelay()
+        simulateNetworkDelay()
 
         moviesRestInterface.getMovieReviews(movieId, ApiConfig.API_KEY).reviews
             .also { reviews ->
