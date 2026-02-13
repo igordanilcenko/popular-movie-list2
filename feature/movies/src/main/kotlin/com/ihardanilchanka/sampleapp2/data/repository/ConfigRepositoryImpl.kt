@@ -5,6 +5,7 @@ import androidx.core.content.edit
 import com.ihardanilchanka.sampleapp2.ApiConfig
 import com.ihardanilchanka.sampleapp2.data.MoviesRestInterface
 import com.ihardanilchanka.sampleapp2.data.model.ImageConfigDto
+import com.ihardanilchanka.sampleapp2.domain.model.ImageConfig
 import com.ihardanilchanka.sampleapp2.domain.repository.ConfigRepository
 import com.squareup.moshi.Moshi
 import java.net.UnknownHostException
@@ -15,14 +16,17 @@ class ConfigRepositoryImpl(
     private val sharedPreferences: SharedPreferences
 ) : ConfigRepository {
 
-    private var imageConfigCache: ImageConfigDto? = null
+    private var imageConfigCache: ImageConfig? = null
 
-    override suspend fun loadConfig() = imageConfigCache ?: try {
-        moviesRestInterface.getConfiguration(ApiConfig.API_KEY).imageConfigDto
-            .also { saveImageConfig(it) }
-    } catch (e: UnknownHostException) {
-        getImageConfig() ?: throw e
-    }.also { imageConfigCache = it }
+    override suspend fun loadConfig() = imageConfigCache
+        ?: try {
+            moviesRestInterface.getConfiguration(ApiConfig.API_KEY).imageConfigDto
+                .also { saveImageConfig(it) }
+        } catch (e: UnknownHostException) {
+            getImageConfig() ?: throw e
+        }
+            .toModel()
+            .also { imageConfigCache = it }
 
 
     private fun saveImageConfig(config: ImageConfigDto) {

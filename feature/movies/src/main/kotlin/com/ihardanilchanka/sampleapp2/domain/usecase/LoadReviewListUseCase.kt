@@ -8,6 +8,6 @@ class LoadReviewListUseCase(
     private val reviewRepository: ReviewRepository,
 ) : SuspendUseCase<Movie, List<Review>> {
     override suspend fun invoke(arg: Movie): List<Review> {
-        return reviewRepository.loadReviewList(movieId = arg.id).map { it.toModel() }
+        return reviewRepository.loadReviewList(movieId = arg.id)
     }
 }

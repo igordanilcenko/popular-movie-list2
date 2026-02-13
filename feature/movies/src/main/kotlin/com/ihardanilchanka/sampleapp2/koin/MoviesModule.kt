@@ -58,6 +58,7 @@ object MoviesModule {
     }
 
     private fun provideDatabase(context: Context): MoviesDatabase {
-        return Room.databaseBuilder(context, MoviesDatabase::class.java, "movies").build()
+        return Room.databaseBuilder(context, MoviesDatabase::class.java, "movies")
+            .build()
     }
 }

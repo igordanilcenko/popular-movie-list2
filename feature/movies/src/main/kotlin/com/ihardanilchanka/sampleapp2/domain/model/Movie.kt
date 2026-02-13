@@ -10,5 +10,5 @@ data class Movie(
     val voteAverage: Double,
     val posterUrl: String?,
     val backdropUrl: String?,
-    val genreNames: List<String>
+    val genreNames: List<String>,
 )

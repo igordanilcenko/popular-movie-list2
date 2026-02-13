@@ -4,8 +4,8 @@ import com.ihardanilchanka.sampleapp2.ApiConfig
 import com.ihardanilchanka.sampleapp2.data.MoviesRestInterface
 import com.ihardanilchanka.sampleapp2.data.database.dao.MovieDao
 import com.ihardanilchanka.sampleapp2.data.database.dao.SimilarMovieDao
-import com.ihardanilchanka.sampleapp2.data.model.MovieDto
 import com.ihardanilchanka.sampleapp2.domain.model.Movie
+import com.ihardanilchanka.sampleapp2.domain.model.RawMovie
 import com.ihardanilchanka.sampleapp2.domain.repository.MovieRepository
 import com.ihardanilchanka.sampleapp2.simulateNetworkDelay
 import java.net.UnknownHostException
@@ -19,9 +19,9 @@ class MovieRepositoryImpl(
     private var selectedMovie: Movie? = null
 
     private var currentPage: Int = 1
-    private val popularMoviesCache = mutableListOf<MovieDto>()
+    private val popularMoviesCache = mutableListOf<RawMovie>()
 
-    private val similarMoviesCache = mutableMapOf<Int, List<MovieDto>>()
+    private val similarMoviesCache = mutableMapOf<Int, List<RawMovie>>()
 
     override fun getSelectedMovie(): Movie =
         selectedMovie ?: error("No movie stored in the MovieRepository!")
@@ -33,57 +33,58 @@ class MovieRepositoryImpl(
     override suspend fun loadSimilarMovieList(movieId: Int) = similarMoviesCache[movieId] ?: try {
         simulateNetworkDelay()
 
-        moviesRestInterface.getSimilarMovieList(movieId, ApiConfig.API_KEY).movies
-            .also { similarMovies ->
-                similarMovieDao.deleteAll(*similarMovieDao.getAll(movieId).toTypedArray())
-                similarMovieDao.insertAll(
-                    *similarMovies.mapIndexed { index, movie ->
-                        movie.toSimilarMovieEntity(movieId, index)
-                    }.toTypedArray()
-                )
-            }
+        val dtos = moviesRestInterface.getSimilarMovieList(movieId, ApiConfig.API_KEY).movies
+        similarMovieDao.deleteAll(*similarMovieDao.getAll(movieId).toTypedArray())
+        similarMovieDao.insertAll(
+            *dtos.mapIndexed { index, movie ->
+                movie.toSimilarMovieEntity(movieId, index)
+            }.toTypedArray()
+        )
+        dtos.map { it.toRawMovie() }
     } catch (e: UnknownHostException) {
-        similarMovieDao.getAll(movieId).takeIf { it.isNotEmpty() }?.map { it.toDto() } ?: throw e
+        similarMovieDao.getAll(movieId).takeIf { it.isNotEmpty() }?.map { it.toRawMovie() }
+            ?: throw e
     }.also { similarMoviesCache[movieId] = it }
 
     override fun getPopularMovieList() = popularMoviesCache
 
-    override suspend fun refreshPopularMovieList(): List<MovieDto> {
+    override suspend fun refreshPopularMovieList(): List<RawMovie> {
         popularMoviesCache.clear()
         currentPage = 1
 
         simulateNetworkDelay()
 
-        val movies = moviesRestInterface.getPopularMovieList(ApiConfig.API_KEY, 1).movies
+        val dtos = moviesRestInterface.getPopularMovieList(ApiConfig.API_KEY, 1).movies
 
         movieDao.deleteAllItems()
-        movieDao.insertAll(*movies.mapIndexed { index, movie -> movie.toEntity(index) }
+        movieDao.insertAll(*dtos.mapIndexed { index, movie -> movie.toEntity(index) }
             .toTypedArray())
 
-        popularMoviesCache.addAll(movies)
+        popularMoviesCache.addAll(dtos.map { it.toRawMovie() })
         currentPage++
 
         return popularMoviesCache
     }
 
-    override suspend fun fetchMorePopularMovies(): List<MovieDto> {
+    override suspend fun fetchMorePopularMovies(): List<RawMovie> {
         simulateNetworkDelay()
 
         popularMoviesCache.addAll(
             try {
-                moviesRestInterface.getPopularMovieList(ApiConfig.API_KEY, currentPage).movies
-                    .also { newMovies ->
-                        // save movies only for 1st page. The app is online-first, so offline work has
-                        // retained only part of online functionality
-                        if (currentPage == 1) {
-                            movieDao.deleteAllItems()
-                            movieDao.insertAll(*newMovies.mapIndexed { index, movie ->
-                                movie.toEntity(index)
-                            }.toTypedArray())
-                        }
-                    }
+                val dtos =
+                    moviesRestInterface.getPopularMovieList(ApiConfig.API_KEY, currentPage).movies
+                // save movies only for 1st page. The app is online-first, so offline work has
+                // retained only part of online functionality
+                if (currentPage == 1) {
+                    movieDao.deleteAllItems()
+                    movieDao.insertAll(*dtos.mapIndexed { index, movie ->
+                        movie.toEntity(index)
+                    }.toTypedArray())
+                }
+                dtos.map { it.toRawMovie() }
             } catch (e: UnknownHostException) {
-                movieDao.getAll().takeIf { currentPage == 1 && it.isNotEmpty() }?.map { it.toDto() }
+                movieDao.getAll().takeIf { currentPage == 1 && it.isNotEmpty() }
+                    ?.map { it.toRawMovie() }
                     ?: throw e
             }
         )

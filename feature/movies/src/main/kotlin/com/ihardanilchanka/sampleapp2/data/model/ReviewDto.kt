@@ -7,7 +7,7 @@ import com.squareup.moshi.Json
 data class ReviewDto(
     @param:Json(name = "id") val id: String,
     @param:Json(name = "author") val author: String,
-    @param:Json(name = "content") val content: String
+    @param:Json(name = "content") val content: String,
 ) {
 
     fun toModel() = Review(

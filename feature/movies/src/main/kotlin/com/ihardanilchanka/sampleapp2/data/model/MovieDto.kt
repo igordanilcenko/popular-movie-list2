@@ -2,7 +2,7 @@ package com.ihardanilchanka.sampleapp2.data.model
 
 import com.ihardanilchanka.sampleapp2.data.database.entity.MovieEntity
 import com.ihardanilchanka.sampleapp2.data.database.entity.SimilarMovieEntity
-import com.ihardanilchanka.sampleapp2.domain.model.Movie
+import com.ihardanilchanka.sampleapp2.domain.model.RawMovie
 import com.squareup.moshi.Json
 import java.util.Date
 
@@ -15,21 +15,18 @@ data class MovieDto(
     @param:Json(name = "backdrop_path") val backdropPath: String?,
     @param:Json(name = "vote_count") val voteCount: Int,
     @param:Json(name = "vote_average") val voteAverage: Double,
-    @param:Json(name = "genre_ids") val genreIds: List<Int>
+    @param:Json(name = "genre_ids") val genreIds: List<Int>,
 ) {
 
-    fun toModel(
-        imageBaseUrl: String,
-        genres: List<String>
-    ) = Movie(
+    fun toRawMovie() = RawMovie(
         id = id,
         title = title,
         overview = overview,
         releaseDate = releaseDate,
         voteAverage = voteAverage,
-        posterUrl = posterPath?.let { getImageUrl(imageBaseUrl, it) },
-        backdropUrl = backdropPath?.let { getImageUrl(imageBaseUrl, it) },
-        genreNames = genres,
+        genreIds = genreIds,
+        posterPath = posterPath,
+        backdropPath = backdropPath,
     )
 
     fun toEntity(order: Int) = MovieEntity(
@@ -58,15 +55,4 @@ data class MovieDto(
         voteCount = voteCount,
         sortOrder = order
     )
-}
-
-const val IMAGE_SIZE_PREFIX = "original"
-
-/**
- * To build an image URL, you will need 3 pieces of data. The base_url, size and file_path.
- * Simply combine them all and you will have a fully qualified URL.
- * More: https://developers.themoviedb.org/3/getting-started/images
- */
-private fun getImageUrl(baseUrl: String, filePath: String): String {
-    return "$baseUrl/$IMAGE_SIZE_PREFIX/$filePath"
 }
