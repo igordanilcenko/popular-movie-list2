@@ -25,12 +25,15 @@ and user reviews – with pagination, pull-to-refresh, and offline support.
 
 ---
 
-## Loading Simulation
+## Network Delay and Error Simulation
 
-The app applies a random 1–4 second delay to every API call via a `randomDelay()` function in
-`lib-network`. This is intentional – it makes all loading states, transitions, and error handling
-clearly visible when running or reviewing the app. Keep this in mind if the app feels slow; it is
-simulating real-world network latency.
+In debug builds the app enables network simulation via `simulateNetworkDelay()` in `lib-network`,
+controlled by the `networkSimulationEnabled` flag (set to `BuildConfig.DEBUG` in
+`SampleAppApplication`). Each call adds a random 1–4 second delay and has a chance of
+throwing to simulate a transient network error. This makes loading states, transitions, and error
+handling clearly visible during presentation. 
+The simulation is a no-op in release builds and unit
+tests.
 
 ---
 

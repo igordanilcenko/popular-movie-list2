@@ -3,9 +3,19 @@ package com.ihardanilchanka.sampleapp2
 import kotlinx.coroutines.delay
 
 /**
- * Makes an artificial delay while suspend function run. Sometimes simulates an error.
+ * Enables network simulation in [simulateNetworkDelay].
+ * Set to true in debug application builds; leave false for tests and release.
  */
-suspend fun randomDelay() {
+@Volatile
+var networkSimulationEnabled: Boolean = false
+
+/**
+ * No-op in tests and release builds.
+ * In debug builds (when [networkSimulationEnabled] is true): adds a random 1–4 s delay,
+ * and 1-in-4 calls throw to simulate a transient network error.
+ */
+suspend fun simulateNetworkDelay() {
+    if (!networkSimulationEnabled) return
     val delaySeconds = (1..4).random()
     delay(delaySeconds * 1000L)
     if (delaySeconds == 4) {

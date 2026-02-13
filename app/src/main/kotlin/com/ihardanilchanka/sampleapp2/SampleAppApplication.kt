@@ -18,6 +18,8 @@ class SampleAppApplication : Application(), SingletonImageLoader.Factory {
     override fun onCreate() {
         super.onCreate()
 
+        networkSimulationEnabled = BuildConfig.DEBUG
+
         startKoin {
             androidContext(this@SampleAppApplication)
             modules(

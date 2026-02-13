@@ -7,7 +7,7 @@ import com.ihardanilchanka.sampleapp2.data.database.dao.SimilarMovieDao
 import com.ihardanilchanka.sampleapp2.data.model.MovieDto
 import com.ihardanilchanka.sampleapp2.domain.model.Movie
 import com.ihardanilchanka.sampleapp2.domain.repository.MovieRepository
-import com.ihardanilchanka.sampleapp2.randomDelay
+import com.ihardanilchanka.sampleapp2.simulateNetworkDelay
 import java.net.UnknownHostException
 
 class MovieRepositoryImpl(
@@ -31,7 +31,7 @@ class MovieRepositoryImpl(
     }
 
     override suspend fun loadSimilarMovieList(movieId: Int) = similarMoviesCache[movieId] ?: try {
-        randomDelay()
+        simulateNetworkDelay()
 
         moviesRestInterface.getSimilarMovieList(movieId, ApiConfig.API_KEY).movies
             .also { similarMovies ->
@@ -52,7 +52,7 @@ class MovieRepositoryImpl(
         popularMoviesCache.clear()
         currentPage = 1
 
-        randomDelay()
+        simulateNetworkDelay()
 
         val movies = moviesRestInterface.getPopularMovieList(ApiConfig.API_KEY, 1).movies
 
@@ -67,7 +67,7 @@ class MovieRepositoryImpl(
     }
 
     override suspend fun fetchMorePopularMovies(): List<MovieDto> {
-        randomDelay()
+        simulateNetworkDelay()
 
         popularMoviesCache.addAll(
             try {
