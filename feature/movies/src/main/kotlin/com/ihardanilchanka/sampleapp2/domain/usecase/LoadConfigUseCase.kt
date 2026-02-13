@@ -6,5 +6,5 @@ import com.ihardanilchanka.sampleapp2.domain.repository.ConfigRepository
 class LoadConfigUseCase(
     private val configRepository: ConfigRepository,
 ) : SuspendNoArgsUseCase<ImageConfig> {
-    override suspend fun invoke() = configRepository.loadConfig().toModel()
+    override suspend fun invoke() = configRepository.loadConfig()
 }

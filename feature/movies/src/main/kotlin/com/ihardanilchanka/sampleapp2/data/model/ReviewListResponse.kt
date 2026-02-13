@@ -4,5 +4,5 @@ import com.squareup.moshi.Json
 
 data class ReviewListResponse(
     @param:Json(name = "id") val id: Int,
-    @param:Json(name = "results") val reviews: List<ReviewDto>
+    @param:Json(name = "results") val reviews: List<ReviewDto>,
 )
